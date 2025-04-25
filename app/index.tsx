@@ -49,6 +49,7 @@ export default function Index() {
 
     setLoading(true);
     try {
+      console.log("Intentando hacer login con URL:", `${API_URL}/login`);
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
@@ -60,6 +61,17 @@ export default function Index() {
         }),
       });
 
+      // Primero verificamos el tipo de contenido
+      const contentType = response.headers.get("content-type");
+      console.log("Content-Type:", contentType);
+
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await response.text();
+        console.error("Respuesta no es JSON:", text);
+        Alert.alert("Error", "El servidor no devolvió un JSON válido");
+        return;
+      }
+
       const data = await response.json();
 
       if (response.ok) {
@@ -70,7 +82,7 @@ export default function Index() {
       }
     } catch (error) {
       console.error("Error en login:", error);
-      Alert.alert("Error", "Error al iniciar sesión");
+      Alert.alert("Error");
     } finally {
       setLoading(false);
     }
@@ -84,6 +96,7 @@ export default function Index() {
 
     setLoading(true);
     try {
+      console.log("Intentando registrar con URL:", `${API_URL}/users`);
       const response = await fetch(`${API_URL}/users`, {
         method: "POST",
         headers: {
@@ -96,6 +109,17 @@ export default function Index() {
           language: signupLanguage,
         }),
       });
+
+      // Primero verificamos el tipo de contenido
+      const contentType = response.headers.get("content-type");
+      console.log("Content-Type:", contentType);
+
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await response.text();
+        console.error("Respuesta no es JSON:", text);
+        Alert.alert("Error", "El servidor no devolvió un JSON válido");
+        return;
+      }
 
       const data = await response.json();
 
@@ -114,7 +138,7 @@ export default function Index() {
       }
     } catch (error) {
       console.error("Error en registro:", error);
-      Alert.alert("Error", "Error al crear la cuenta");
+      Alert.alert("Error");
     } finally {
       setLoading(false);
     }

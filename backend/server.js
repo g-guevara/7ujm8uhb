@@ -5,8 +5,16 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 
 const app = express();
-app.use(cors());
+// Configuración detallada de CORS
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
@@ -82,6 +90,15 @@ const Wishlist = mongoose.model("Wishlist", WishlistSchema, "wishlist");
 // Ruta de prueba
 app.get("/", (req, res) => {
   res.json({ message: "Servidor funcionando correctamente 🚀" });
+});
+
+// Ruta de prueba para POST
+app.post("/test", (req, res) => {
+  console.log("Recibido POST en /test:", req.body);
+  res.json({ 
+    message: "POST recibido correctamente",
+    body: req.body 
+  });
 });
 
 // Rutas de Usuarios
@@ -253,6 +270,28 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+// Middleware de manejo de errores global
+app.use((err, req, res, next) => {
+  console.error("Error en el servidor:", err);
+  res.status(500).json({ 
+    error: "Error interno del servidor",
+    message: err.message 
+  });
+});
+
+// Middleware para asegurar que todas las respuestas sean JSON
+app.use((req, res, next) => {
+  const originalSend = res.send;
+  res.send = function(body) {
+    if (typeof body === 'string' && !res.get('Content-Type')?.includes('json')) {
+      res.set('Content-Type', 'application/json');
+      body = JSON.stringify({ message: body });
+    }
+    return originalSend.call(this, body);
+  };
+  next();
 });
 
 // Exportar para Vercel
