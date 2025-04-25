@@ -10,7 +10,7 @@ app.use(express.json());
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
-  dbName: "sensitivv", // Asumiendo el nombre basado en la imagen
+  dbName: "sensitivv", // Asumiendo el nombre basado en 
 })
 .then(() => console.log("Conectado a MongoDB"))
 .catch(err => console.error("Error conectando a MongoDB:", err));
