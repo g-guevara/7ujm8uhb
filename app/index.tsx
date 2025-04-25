@@ -61,7 +61,7 @@ export default function Index() {
         }),
       });
 
-      // Primero verificamos el tipo de contenido
+      // Primero verificamos el tipo de 
       const contentType = response.headers.get("content-type");
       console.log("Content-Type:", contentType);
 
