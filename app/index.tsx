@@ -1,3 +1,4 @@
+// app/index.tsx
 import React, { useState } from "react";
 import { 
   SafeAreaView,
@@ -5,10 +6,10 @@ import {
   KeyboardAvoidingView,
   ScrollView
 } from "react-native";
-import LoginForm from "./pages/LoginForm";
-import SignupForm from "./pages/SignupForm";
+import LoginForm from "./screens/LoginForm";
+import SignupForm from "./screens/SignupForm";
 import { User } from "./components/Login/User";
-import WelcomeScreen from "./pages/WelcomeScreen";
+import TabNavigator from "./navigation/TabNavigator";
 import { styles } from "./styles/IndexStyles";
 
 // URL de tu API (reemplazar con la URL de Vercel cuando esté desplegado)
@@ -18,9 +19,9 @@ export default function Index() {
   const [isLogin, setIsLogin] = useState(true);
   const [user, setUser] = useState<User | null>(null);
 
-  // Si el usuario está logueado, mostramos una pantalla de bienvenida
+  // Si el usuario está logueado, mostramos el tab navigator
   if (user) {
-    return <WelcomeScreen user={user} onLogout={() => setUser(null)} />;
+    return <TabNavigator user={user} onLogout={() => setUser(null)} />;
   }
 
   return (
