@@ -8,46 +8,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Middleware para verificar la conexión
-app.use((req, res, next) => {
-  if (mongoose.connection.readyState !== 1) {
-    console.log("Estado de conexión MongoDB:", mongoose.connection.readyState);
-    return res.status(503).json({ 
-      error: "Base de datos no disponible",
-      status: mongoose.connection.readyState,
-      details: mongoose.connection.host
-    });
-  }
-  next();
-});
-
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
-  dbName: "sensitivv", // Asumiendo el nombre basado en la imagen
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000, // Timeout de 5 segundos
-  socketTimeoutMS: 45000, // Timeout de 45 segundos
+  dbName: "sensitivv", // Asumiendo el nombre basado en 
 })
 .then(() => console.log("Conectado a MongoDB"))
-.catch(err => {
-  console.error("Error conectando a MongoDB:", err);
-  console.error("URL de conexión:", process.env.MONGODB_URI.replace(/:[^:]*@/, ':****@')); // Ocultar contraseña
-  process.exit(1); // Salir si no se puede conectar
-});
-
-// Eventos de conexión
-mongoose.connection.on('connected', () => {
-  console.log('Mongoose conectado exitosamente');
-});
-
-mongoose.connection.on('error', (err) => {
-  console.error('Error de conexión MongoDB:', err);
-});
-
-mongoose.connection.on('disconnected', () => {
-  console.log('Mongoose desconectado');
-});
+.catch(err => console.error("Error conectando a MongoDB:", err));
 
 // Schemas
 
@@ -116,18 +82,6 @@ const Wishlist = mongoose.model("Wishlist", WishlistSchema, "wishlist");
 // Ruta de prueba
 app.get("/", (req, res) => {
   res.json({ message: "Servidor funcionando correctamente 🚀" });
-});
-
-// Ruta de salud para verificar el estado de la conexión
-app.get("/health", (req, res) => {
-  const dbStatus = mongoose.connection.readyState;
-  const status = {
-    server: "online",
-    database: dbStatus === 1 ? "connected" : "disconnected",
-    dbState: dbStatus,
-    timestamp: new Date()
-  };
-  res.status(dbStatus === 1 ? 200 : 503).json(status);
 });
 
 // Rutas de Usuarios
