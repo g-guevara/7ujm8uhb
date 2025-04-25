@@ -1,84 +1,118 @@
-// app/screens/HomeScreen.tsx
-import React from "react";
+import React from 'react';
 import { 
-  Text, 
   View, 
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView
-} from "react-native";
-import { User } from "../components/Login/User";
+  Text, 
+  SafeAreaView, 
+  TextInput, 
+  ScrollView, 
+  TouchableOpacity 
+} from 'react-native';
+import { Path, Svg } from 'react-native-svg';
+import { styles } from '../styles/HomeStyles';
+
+interface User {
+  // Add your user interface properties here
+  id?: string;
+  name?: string;
+  email?: string;
+}
 
 interface HomeScreenProps {
-  user: User;
-  onLogout: () => void;
+  user?: User;
+  onLogout?: () => void;
 }
 
 export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.welcomeTitle}>¡Bienvenido, {user.name}!</Text>
-        <TouchableOpacity 
-          style={styles.logoutButton} 
-          onPress={onLogout}
-        >
-          <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
+      <ScrollView style={styles.scrollView}>
+        {/* Header with Home title and Profile icon */}
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerText}>Home</Text>
+          <TouchableOpacity 
+            style={styles.profileButton}
+            onPress={onLogout}
+          >
+            <Svg width={52} height={52} viewBox="0 0 24 24" fill="#000">
+  <Path 
+    fillRule="evenodd" 
+    d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" 
+    clipRule="evenodd" 
+  />
+</Svg>
+
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.searchContainer}> 
+          <TextInput 
+            style={styles.searchInput} 
+            placeholder="Search..." 
+            placeholderTextColor="#999" 
+          /> 
+        </View>
+        
+        <Text style={styles.sectionTitle}>Most Searched Products</Text>
+        
+        <TouchableOpacity style={styles.productItem}>
+          <Text style={styles.productText}>FrostyCream</Text>
+          <Text style={styles.arrowIcon}>→</Text>
         </TouchableOpacity>
-      </View>
-      
-      <View style={styles.content}>
-        <Text style={styles.subtitle}>Dashboard</Text>
-        <Text style={styles.infoText}>Email: {user.email}</Text>
-        <Text style={styles.infoText}>Idioma: {user.language}</Text>
-        <Text style={styles.infoText}>Días de prueba: {user.trialPeriodDays}</Text>
-      </View>
+        
+        <TouchableOpacity style={styles.productItem}>
+          <Text style={styles.productText}>NutriFlakes</Text>
+          <Text style={styles.arrowIcon}>→</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.productItem}>
+          <Text style={styles.productText}>FizzUp</Text>
+          <Text style={styles.arrowIcon}>→</Text>
+        </TouchableOpacity>
+        
+        <Text style={styles.sectionTitle}>Organic Categories</Text>
+        
+        <View style={styles.categoriesContainer}>
+          <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#FFCC66' }]}>
+            <Text style={styles.categoryIcon}></Text>
+            <Text style={styles.categoryText}>Dairy</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#66CC99' }]}>
+            <Text style={styles.categoryIcon}></Text>
+            <Text style={styles.categoryText}>Fruits</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#FF8888' }]}>
+            <Text style={styles.categoryIcon}></Text>
+            <Text style={styles.categoryText}>Grains</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#77AAFF' }]}>
+            <Text style={styles.categoryIcon}></Text>
+            <Text style={styles.categoryText}>Legumes</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#FFAA99' }]}>
+            <Text style={styles.categoryIcon}></Text>
+            <Text style={styles.categoryText}>Meat</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#AAAAAA' }]}>
+            <Text style={styles.categoryIcon}></Text>
+            <Text style={styles.categoryText}>Nuts</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#9999FF' }]}>
+            <Text style={styles.categoryIcon}></Text>
+            <Text style={styles.categoryText}>Seafood</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#88DDAA' }]}>
+            <Text style={styles.categoryIcon}></Text>
+            <Text style={styles.categoryText}>Vegetables</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  welcomeTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  logoutButton: {
-    backgroundColor: "#dc3545",
-    padding: 10,
-    borderRadius: 8,
-  },
-  logoutButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  subtitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: "#333",
-  },
-  infoText: {
-    fontSize: 16,
-    marginBottom: 10,
-    color: "#666",
-  },
-});

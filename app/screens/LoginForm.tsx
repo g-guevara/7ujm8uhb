@@ -1,3 +1,4 @@
+// app/screens/LoginForm.tsx
 import React, { useState } from "react";
 import { 
   Text, 
@@ -5,8 +6,8 @@ import {
   TextInput,
   TouchableOpacity, 
   ActivityIndicator,
-  Alert
 } from "react-native";
+import { useToast } from '../utils/ToastContext';
 import { User } from "../components/Login/User";
 import { styles } from "../styles/LoginFormStyles";
 
@@ -20,10 +21,11 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
   const [loading, setLoading] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const { showToast } = useToast();
 
   const handleLogin = async () => {
     if (!loginEmail || !loginPassword) {
-      Alert.alert("Error", "Por favor completa todos los campos");
+      showToast('Por favor completa todos los campos', 'error');
       return;
     }
 
@@ -47,7 +49,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
       if (!contentType || !contentType.includes("application/json")) {
         const text = await response.text();
         console.error("Respuesta no es JSON:", text);
-        Alert.alert("Error", "El servidor no devolvió un JSON válido");
+        showToast('El servidor no devolvió un JSON válido', 'error');
         return;
       }
 
@@ -55,13 +57,26 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
 
       if (response.ok) {
         onLogin(data.user);
-        Alert.alert("Éxito", "Has iniciado sesión correctamente");
+        showToast('¡Has iniciado sesión correctamente!', 'success');
       } else {
-        Alert.alert("Error", data.error || "No se pudo iniciar sesión");
+        // Specific error messages based on server response
+        if (response.status === 401) {
+          showToast('Email o contraseña incorrectos', 'error');
+        } else if (response.status === 404) {
+          showToast('El email no está registrado', 'error');
+        } else {
+          showToast(data.error || 'No se pudo iniciar sesión', 'error');
+        }
       }
     } catch (error) {
       console.error("Error en login:", error);
-      Alert.alert("Error");
+      
+      // Check if it's a network error
+      if (error instanceof TypeError && error.message.includes('Network request failed')) {
+        showToast('Por favor verifica tu conexión a internet', 'error');
+      } else {
+        showToast('No se pudo conectar con el servidor', 'error');
+      }
     } finally {
       setLoading(false);
     }

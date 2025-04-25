@@ -1,3 +1,4 @@
+// app/screens/SignupForm.tsx
 import React, { useState } from "react";
 import { 
   Text, 
@@ -5,8 +6,8 @@ import {
   TextInput,
   TouchableOpacity, 
   ActivityIndicator,
-  Alert
 } from "react-native";
+import { useToast } from '../utils/ToastContext';
 import { styles } from "../styles/SignupFormStyles";
 
 interface SignupFormProps {
@@ -20,10 +21,11 @@ export default function SignupForm({ onSwitchToLogin, apiUrl }: SignupFormProps)
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupLanguage, setSignupLanguage] = useState("es");
+  const { showToast } = useToast();
 
   const handleSignup = async () => {
     if (!signupName || !signupEmail || !signupPassword) {
-      Alert.alert("Error", "Por favor completa todos los campos");
+      showToast('Por favor completa todos los campos', 'error');
       return;
     }
 
@@ -49,28 +51,36 @@ export default function SignupForm({ onSwitchToLogin, apiUrl }: SignupFormProps)
       if (!contentType || !contentType.includes("application/json")) {
         const text = await response.text();
         console.error("Respuesta no es JSON:", text);
-        Alert.alert("Error", "El servidor no devolvió un JSON válido");
+        showToast('El servidor no devolvió un JSON válido', 'error');
         return;
       }
 
       const data = await response.json();
 
       if (response.ok) {
-        Alert.alert(
-          "Éxito", 
-          "Cuenta creada correctamente. Ahora puedes iniciar sesión.",
-          [{ text: "OK", onPress: onSwitchToLogin }]
-        );
-        // Limpiar campos de registro
+        showToast('¡Cuenta creada correctamente!', 'success');
+        
+        // Wait a moment before switching to login
+        setTimeout(() => {
+          onSwitchToLogin();
+        }, 1500);
+
+        // Clear signup fields
         setSignupName("");
         setSignupEmail("");
         setSignupPassword("");
       } else {
-        Alert.alert("Error", data.error || "No se pudo crear la cuenta");
+        showToast(data.error || 'No se pudo crear la cuenta', 'error');
       }
     } catch (error) {
       console.error("Error en registro:", error);
-      Alert.alert("Error");
+      
+      // Check if it's a network error
+      if (error instanceof TypeError && error.message.includes('Network request failed')) {
+        showToast('Por favor verifica tu conexión a internet', 'error');
+      } else {
+        showToast('No se pudo conectar con el servidor', 'error');
+      }
     } finally {
       setLoading(false);
     }
