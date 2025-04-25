@@ -2,7 +2,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Text } from 'react-native';
+import { Text, Platform } from 'react-native';
 import { User } from '../components/Login/User';
 
 // Import screens
@@ -48,10 +48,12 @@ export default function TabNavigator({ user, onLogout }: TabNavigatorProps) {
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
-          height: 60,
-          paddingBottom: 5,
-          paddingTop: 5,
+          height: Platform.OS === 'ios' ? 90 : 60,
+          paddingBottom: Platform.OS === 'ios' ? 30 : 5,
+          paddingTop: Platform.OS === 'ios' ? 10 : 5,
           backgroundColor: '#f8f8f8',
+          borderTopWidth: 1,
+          borderTopColor: '#e0e0e0',
         },
         tabBarActiveTintColor: '#4285F4',
         tabBarInactiveTintColor: '#888',
