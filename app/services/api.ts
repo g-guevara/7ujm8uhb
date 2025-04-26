@@ -101,4 +101,22 @@ export class ApiService {
   static async getProductNotes() {
     return this.fetch('/productnotes');
   }
+
+  static async getProfile() {
+    return this.fetch('/profile');
+  }
+
+  static async changePassword(currentPassword: string, newPassword: string) {
+    return this.fetch('/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+  }
+
+  static async updateTrialPeriod(trialDays: number) {
+    return this.fetch('/update-trial-period', {
+      method: 'POST',
+      body: JSON.stringify({ trialDays }),
+    });
+  }
 }

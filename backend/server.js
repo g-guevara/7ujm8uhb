@@ -368,6 +368,107 @@ app.post("/wishlist", authenticateToken, async (req, res) => {
   }
 });
 
+
+
+
+// Change password endpoint
+app.post("/change-password", authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    
+    // Find user
+    const user = await User.findOne({ userID: req.user.userID });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Verify current password
+    const validPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ error: "Current password is incorrect" });
+    }
+    
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Update password
+    user.password = hashedPassword;
+    await user.save();
+    
+    res.json({ message: "Password changed successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update trial period endpoint
+app.post("/update-trial-period", authenticateToken, async (req, res) => {
+  try {
+    const { trialDays } = req.body;
+    
+    // Validate trial days
+    if (typeof trialDays !== 'number' || trialDays < 0) {
+      return res.status(400).json({ error: "Invalid trial days value" });
+    }
+    
+    // Find user and update
+    const user = await User.findOne({ userID: req.user.userID });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    user.trialPeriodDays = trialDays;
+    await user.save();
+    
+    res.json({ 
+      message: "Trial period updated successfully",
+      trialPeriodDays: trialDays
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get user profile endpoint
+app.get("/profile", authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findOne({ userID: req.user.userID }).select('-password');
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Verificar token (ruta de utilidad)
 app.get("/verify-token", authenticateToken, (req, res) => {
   res.json({ valid: true, user: req.user });
