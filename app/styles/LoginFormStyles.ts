@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+
 export const styles = StyleSheet.create({
   formContainer: {
     backgroundColor: "#fff",
@@ -9,6 +10,9 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    width: '100%',
+    maxWidth: 400,
+    alignSelf: 'center',
   },
   title: {
     fontSize: 24,
@@ -25,6 +29,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 16,
     backgroundColor: "#fff",
+    width: '100%',
   },
   button: {
     backgroundColor: "#007bff",
@@ -32,6 +37,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginTop: 10,
+    width: '100%',
   },
   buttonDisabled: {
     backgroundColor: "#ccc",
@@ -56,6 +62,7 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 2,
+    width: '100%',
   },
   googleLogo: {
     width: 24,
@@ -70,21 +77,6 @@ export const styles = StyleSheet.create({
   googleButtonDisabled: {
     backgroundColor: "#f5f5f5",
     borderColor: "#e0e0e0",
-  },
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 20,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#ddd",
-  },
-  dividerText: {
-    marginHorizontal: 10,
-    color: "#666",
-    fontSize: 14,
   },
   switchButton: {
     marginTop: 20,

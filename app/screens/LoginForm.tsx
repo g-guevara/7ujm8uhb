@@ -64,11 +64,11 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
         if (loginResponse.token) {
           await saveToken(loginResponse.token);
           onLogin(loginResponse.user);
-          showToast('Iniciado sesión con Google', 'success');
+          showToast('Signed in with Google', 'success');
         }
       } catch (error: any) {
         console.error("Google login error: ", error);
-        showToast('Error al iniciar sesión con Google', 'error');
+        showToast('Failed to sign in with Google', 'error');
       } finally {
         setGoogleLoading(false);
       }
@@ -77,7 +77,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
 
   const handleLogin = async () => {
     if (!loginEmail || !loginPassword) {
-      showToast('Por favor completa todos los campos', 'error');
+      showToast('Please fill in all fields', 'error');
       return;
     }
 
@@ -96,13 +96,13 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
       console.error("Login error: ", error);
       
       if (error.message === 'Sesión expirada') {
-        showToast('Tu sesión ha expirado, por favor inicia sesión nuevamente', 'error');
+        showToast('Your session has expired, please log in again', 'error');
       } else if (error.message.includes('Credenciales inválidas')) {
-        showToast('Email o contraseña incorrectos', 'error');
+        showToast('Invalid email or password', 'error');
       } else if (error instanceof TypeError && error.message.includes('Network request failed')) {
-        showToast('Por favor verifica tu conexión a internet', 'error');
+        showToast('Please check your internet connection', 'error');
       } else {
-        showToast(error.message || 'No se pudo iniciar sesión', 'error');
+        showToast(error.message || 'Login failed', 'error');
       }
     } finally {
       setLoading(false);
@@ -111,7 +111,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
 
   return (
     <View style={styles.formContainer}>
-      <Text style={styles.title}>Iniciar Sesión</Text>
+      <Text style={styles.title}>Sign In</Text>
       
       <TextInput
         style={styles.input}
@@ -123,7 +123,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
       />
       <TextInput
         style={styles.input}
-        placeholder="Contraseña"
+        placeholder="Password"
         value={loginPassword}
         onChangeText={setLoginPassword}
         secureTextEntry
@@ -136,7 +136,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Iniciar Sesión</Text>
+          <Text style={styles.buttonText}>Sign In</Text>
         )}
       </TouchableOpacity>
 
@@ -156,7 +156,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
               resizeMode="contain"
             />
             <Text style={styles.googleButtonText}>
-              Continuar con Google
+              Continue with Google
             </Text>
           </>
         )}
@@ -167,7 +167,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
         onPress={onSwitchToSignup}
       >
         <Text style={styles.switchButtonText}>
-          ¿No tienes cuenta? Regístrate
+          Don't have an account? Sign up
         </Text>
       </TouchableOpacity>
     </View>

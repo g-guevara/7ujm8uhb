@@ -10,6 +10,9 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    width: '100%',
+    maxWidth: 400,
+    alignSelf: 'center',
   },
   title: {
     fontSize: 24,
@@ -26,6 +29,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 16,
     backgroundColor: "#fff",
+    width: '100%',
   },
   button: {
     backgroundColor: "#007bff",
@@ -33,6 +37,7 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginTop: 10,
+    width: '100%',
   },
   buttonDisabled: {
     backgroundColor: "#ccc",

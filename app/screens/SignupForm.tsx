@@ -21,12 +21,12 @@ export default function SignupForm({ onSwitchToLogin, apiUrl }: SignupFormProps)
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
-  const [signupLanguage, setSignupLanguage] = useState("es");
+  const [signupLanguage, setSignupLanguage] = useState("en");
   const { showToast } = useToast();
 
   const handleSignup = async () => {
     if (!signupName || !signupEmail || !signupPassword) {
-      showToast('Por favor completa todos los campos', 'error');
+      showToast('Please fill in all fields', 'error');
       return;
     }
 
@@ -54,9 +54,9 @@ export default function SignupForm({ onSwitchToLogin, apiUrl }: SignupFormProps)
       console.error("Error en registro:", error);
       
       if (error instanceof TypeError && error.message.includes('Network request failed')) {
-        showToast('Por favor verifica tu conexión a internet', 'error');
+        showToast('Please check your internet connection', 'error');
       } else {
-        showToast(error.message || 'No se pudo crear la cuenta', 'error');
+        showToast(error.message || 'Failed to create account', 'error');
       }
     } finally {
       setLoading(false);
@@ -65,11 +65,11 @@ export default function SignupForm({ onSwitchToLogin, apiUrl }: SignupFormProps)
 
   return (
     <View style={styles.formContainer}>
-      <Text style={styles.title}>Crear Cuenta</Text>
+      <Text style={styles.title}>Create Account</Text>
       
       <TextInput
         style={styles.input}
-        placeholder="Nombre"
+        placeholder="Name"
         value={signupName}
         onChangeText={setSignupName}
       />
@@ -83,13 +83,13 @@ export default function SignupForm({ onSwitchToLogin, apiUrl }: SignupFormProps)
       />
       <TextInput
         style={styles.input}
-        placeholder="Contraseña"
+        placeholder="Password"
         value={signupPassword}
         onChangeText={setSignupPassword}
         secureTextEntry
       />
       <View style={styles.languageContainer}>
-        <Text style={styles.languageLabel}>Idioma:</Text>
+        <Text style={styles.languageLabel}>Language:</Text>
         <View style={styles.languageButtons}>
           <TouchableOpacity 
             style={[
@@ -125,7 +125,7 @@ export default function SignupForm({ onSwitchToLogin, apiUrl }: SignupFormProps)
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Crear Cuenta</Text>
+          <Text style={styles.buttonText}>Create Account</Text>
         )}
       </TouchableOpacity>
       
@@ -134,7 +134,7 @@ export default function SignupForm({ onSwitchToLogin, apiUrl }: SignupFormProps)
         onPress={onSwitchToLogin}
       >
         <Text style={styles.switchButtonText}>
-          ¿Ya tienes cuenta? Inicia sesión
+          Already have an account? Sign in
         </Text>
       </TouchableOpacity>
     </View>
