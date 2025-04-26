@@ -29,25 +29,7 @@ export const styles = StyleSheet.create({
     marginTop: 50,
     marginBottom: 20,
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f2f2f7',
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-    height: 50,
-  },
-  searchIcon: {
-    fontSize: 16,
-    marginRight: 10,
-    color: '#999',
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    color: '#333',
-  },
+
   sectionTitle: {
     fontSize: 24,
     fontWeight: '600',
@@ -128,5 +110,69 @@ export const styles = StyleSheet.create({
   },
   activeTabText: {
     color: '#007AFF',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f2f2f7',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    marginBottom: 20,
+    height: 50,
+  },
+  searchIcon: {
+    fontSize: 16,
+    marginRight: 10,
+    color: '#999',
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+  },
+  clearButton: {
+    padding: 8,
+  },
+  clearButtonText: {
+    fontSize: 18,
+    color: '#999',
+  },
+  searchResultsContainer: {
+    marginTop: 10,
+  },
+  searchResultItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#f2f2f7',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+  },
+  searchResultContent: {
+    flex: 1,
+  },
+  searchResultText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+  },
+  searchResultCategory: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  noResultsContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  noResultsText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  loadingContainer: {
+    padding: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
