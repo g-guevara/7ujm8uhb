@@ -1,17 +1,23 @@
 // app/screens/LoginForm.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Text, 
   View, 
   TextInput,
   TouchableOpacity, 
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { useToast } from '../utils/ToastContext';
 import { User } from "../components/Login/User";
 import { styles } from "../styles/LoginFormStyles";
 import { ApiService } from "../services/api";
 import { saveToken } from "../utils/authUtils";
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+import { makeRedirectUri } from 'expo-auth-session';
+
+WebBrowser.maybeCompleteAuthSession();
 
 interface LoginFormProps {
   onLogin: (user: User) => void;
@@ -21,9 +27,52 @@ interface LoginFormProps {
 
 export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFormProps) {
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const { showToast } = useToast();
+
+  // Configuración de Google OAuth
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: '421431845569-3gi5bflt29es9fo1ovrpc9tprmd6tj3s.apps.googleusercontent.com',
+  });
+
+  useEffect(() => {
+    handleGoogleResponse();
+  }, [response]);
+
+  const handleGoogleResponse = async () => {
+    if (response?.type === 'success') {
+      setGoogleLoading(true);
+      try {
+        const { params } = response;
+        const { id_token } = params;
+        
+        // Decode the ID token to get user info
+        const decodedToken = JSON.parse(atob(id_token.split('.')[1]));
+        
+        // Send Google token to your backend
+        const loginResponse = await ApiService.googleLogin({
+          idToken: id_token,
+          accessToken: '', // ID token flow doesn't provide access token
+          email: decodedToken.email,
+          name: decodedToken.name,
+          googleId: decodedToken.sub
+        });
+        
+        if (loginResponse.token) {
+          await saveToken(loginResponse.token);
+          onLogin(loginResponse.user);
+          showToast('Iniciado sesión con Google', 'success');
+        }
+      } catch (error: any) {
+        console.error("Google login error: ", error);
+        showToast('Error al iniciar sesión con Google', 'error');
+      } finally {
+        setGoogleLoading(false);
+      }
+    }
+  };
 
   const handleLogin = async () => {
     if (!loginEmail || !loginPassword) {
@@ -62,6 +111,27 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
   return (
     <View style={styles.formContainer}>
       <Text style={styles.title}>Iniciar Sesión</Text>
+      
+      {/* Google Sign-In Button */}
+      <TouchableOpacity 
+        style={[styles.googleButton, googleLoading && styles.buttonDisabled]} 
+        onPress={() => promptAsync()}
+        disabled={!request || googleLoading}
+      >
+        {googleLoading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.googleButtonText}>
+            Continuar con Google
+          </Text>
+        )}
+      </TouchableOpacity>
+
+      <View style={styles.divider}>
+        <View style={styles.dividerLine} />
+        <Text style={styles.dividerText}>O</Text>
+        <View style={styles.dividerLine} />
+      </View>
       
       <TextInput
         style={styles.input}

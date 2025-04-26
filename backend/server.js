@@ -33,7 +33,9 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   language: { type: String, default: "en" },
-  trialPeriodDays: { type: Number, default: 5 }
+  trialPeriodDays: { type: Number, default: 5 },
+  googleId: { type: String, sparse: true },
+  authProvider: { type: String, default: 'local' }
 }, { timestamps: true });
 
 // Articles Schema
@@ -191,6 +193,57 @@ app.post("/login", async (req, res) => {
       },
       process.env.JWT_SECRET,
       { expiresIn: '7d' } // Token válido por 7 días
+    );
+    
+    // Remover contraseña de la respuesta
+    const userResponse = user.toObject();
+    delete userResponse.password;
+    
+    res.json({ 
+      user: userResponse,
+      token: token
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Google Login
+app.post("/google-login", async (req, res) => {
+  try {
+    const { email, name, googleId, idToken, accessToken } = req.body;
+    
+    // Verificar si el usuario ya existe
+    let user = await User.findOne({ email });
+    
+    if (!user) {
+      // Crear nuevo usuario con Google
+      user = new User({
+        userID: new mongoose.Types.ObjectId().toString(),
+        name,
+        email,
+        password: await bcrypt.hash(googleId + Date.now(), 10), // Contraseña temporal
+        language: "en",
+        googleId: googleId,
+        authProvider: 'google'
+      });
+      await user.save();
+    } else if (!user.googleId) {
+      // Vincular cuenta existente con Google
+      user.googleId = googleId;
+      user.authProvider = 'google';
+      await user.save();
+    }
+    
+    // Crear token JWT
+    const token = jwt.sign(
+      { 
+        userID: user.userID,
+        email: user.email,
+        name: user.name 
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
     );
     
     // Remover contraseña de la respuesta

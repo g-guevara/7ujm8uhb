@@ -43,6 +43,19 @@ export class ApiService {
     });
   }
 
+  static async googleLogin(googleData: {
+    idToken: string;
+    accessToken: string;
+    email: string;
+    name: string;
+    googleId: string;
+  }) {
+    return this.fetch('/google-login', {
+      method: 'POST',
+      body: JSON.stringify(googleData),
+    });
+  }
+
   static async signup(userData: {
     name: string;
     email: string;
