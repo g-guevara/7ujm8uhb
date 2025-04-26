@@ -47,7 +47,7 @@ export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
         <View style={styles.searchContainer}> 
           <TextInput 
             style={styles.searchInput} 
-            placeholder="Search..." 
+            placeholder="Search" 
             placeholderTextColor="#999" 
           /> 
         </View>
