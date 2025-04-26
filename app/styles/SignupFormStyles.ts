@@ -1,6 +1,36 @@
-import { StyleSheet } from "react-native";
+// app/styles/SignupFormStyles.ts
+import { StyleSheet, ViewStyle, TextStyle, ImageStyle } from 'react-native';
 
-export const styles = StyleSheet.create({
+// Define a type for your styles
+interface SignupFormStylesType {
+  formContainer: ViewStyle;
+  logoContainer: ViewStyle;
+  logo: ImageStyle;
+  title: TextStyle;
+  input: TextStyle;
+  languageContainer: ViewStyle;
+  languageLabel: TextStyle;
+  languageButtons: ViewStyle;
+  languageButton: ViewStyle;
+  languageButtonActive: ViewStyle;
+  languageButtonText: TextStyle;
+  languageButtonTextActive: TextStyle;
+  button: ViewStyle;
+  buttonDisabled: ViewStyle;
+  buttonText: TextStyle;
+  switchButton: ViewStyle;
+  switchButtonText: TextStyle;
+  passwordStrengthContainer: ViewStyle;
+  passwordStrengthBar: ViewStyle;
+  passwordStrengthProgress: ViewStyle;
+  passwordStrengthLabel: TextStyle;
+  passwordRequirements: ViewStyle;
+  requirementText: TextStyle;
+  requirementMet: TextStyle;
+  requirementNotMet: TextStyle;
+}
+
+export const styles = StyleSheet.create<SignupFormStylesType>({
 
   title: {
     fontSize: 24,
@@ -111,4 +141,76 @@ export const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'contain',
   },
+  passwordStrengthContainer: {
+    marginTop: 8,
+    marginBottom: 12,
+    paddingHorizontal: 10,
+  },
+  passwordStrengthBar: {
+    height: 6,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  passwordStrengthProgress: {
+    height: '100%',
+    borderRadius: 3,
+    // Note: width and backgroundColor are set dynamically in the component
+  },
+  passwordStrengthLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 4,
+  },
+  passwordRequirements: {
+    marginBottom: 16,
+    paddingHorizontal: 10,
+  },
+  requirementText: {
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  requirementMet: {
+    color: '#27ae60',
+  },
+  requirementNotMet: {
+    color: '#666',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+  },
+  passwordInput: {
+    flex: 1,
+    height: 50,
+    paddingHorizontal: 16,
+    fontSize: 16,
+  },
+  showPasswordButton: {
+    padding: 12,
+  },
+  showPasswordText: {
+    color: '#4A90E2',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  passwordMatchText: {
+    fontSize: 12,
+    marginBottom: 16,
+    marginTop: -8,
+    paddingHorizontal: 10,
+  },
+  passwordMatch: {
+    color: '#27ae60',  // Green
+  },
+  passwordNoMatch: {
+    color: '#e74c3c',  // Red
+  },
+  
+
+
 });
