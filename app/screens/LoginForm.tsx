@@ -41,9 +41,9 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
       }
       
       onLogin(response.user);
-      showToast('¡Has iniciado sesión correctamente!', 'success');
+      showToast('Logged in', 'success');
     } catch (error: any) {
-      console.error("Error en login:", error);
+      console.error("Login error: ", error);
       
       if (error.message === 'Sesión expirada') {
         showToast('Tu sesión ha expirado, por favor inicia sesión nuevamente', 'error');

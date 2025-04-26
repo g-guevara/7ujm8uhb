@@ -39,7 +39,7 @@ export default function SignupForm({ onSwitchToLogin, apiUrl }: SignupFormProps)
         language: signupLanguage
       });
 
-      showToast('¡Cuenta creada correctamente!', 'success');
+      showToast('Account created successfully!', 'success');
       
       // Wait a moment before switching to login
       setTimeout(() => {
