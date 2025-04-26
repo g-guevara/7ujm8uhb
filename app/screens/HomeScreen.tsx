@@ -52,7 +52,7 @@ export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
           /> 
         </View>
         
-        <Text style={styles.sectionTitle}>Most Searched Products</Text>
+        <Text style={styles.sectionTitle}>Searched Products</Text>
         
         <TouchableOpacity style={styles.productItem}>
           <Text style={styles.productText}>FrostyCream</Text>
