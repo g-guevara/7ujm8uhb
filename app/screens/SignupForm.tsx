@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useToast } from '../utils/ToastContext';
 import { styles } from "../styles/SignupFormStyles";
+import { ApiService } from "../services/api";
 
 interface SignupFormProps {
   onSwitchToLogin: () => void;
@@ -31,55 +32,31 @@ export default function SignupForm({ onSwitchToLogin, apiUrl }: SignupFormProps)
 
     setLoading(true);
     try {
-      console.log("Intentando registrar con URL:", `${apiUrl}/users`);
-      const response = await fetch(`${apiUrl}/users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: signupName,
-          email: signupEmail,
-          password: signupPassword,
-          language: signupLanguage,
-        }),
+      await ApiService.signup({
+        name: signupName,
+        email: signupEmail,
+        password: signupPassword,
+        language: signupLanguage
       });
 
-      const contentType = response.headers.get("content-type");
-      console.log("Content-Type:", contentType);
+      showToast('¡Cuenta creada correctamente!', 'success');
+      
+      // Wait a moment before switching to login
+      setTimeout(() => {
+        onSwitchToLogin();
+      }, 1500);
 
-      if (!contentType || !contentType.includes("application/json")) {
-        const text = await response.text();
-        console.error("Respuesta no es JSON:", text);
-        showToast('El servidor no devolvió un JSON válido', 'error');
-        return;
-      }
-
-      const data = await response.json();
-
-      if (response.ok) {
-        showToast('¡Cuenta creada correctamente!', 'success');
-        
-        // Wait a moment before switching to login
-        setTimeout(() => {
-          onSwitchToLogin();
-        }, 1500);
-
-        // Clear signup fields
-        setSignupName("");
-        setSignupEmail("");
-        setSignupPassword("");
-      } else {
-        showToast(data.error || 'No se pudo crear la cuenta', 'error');
-      }
-    } catch (error) {
+      // Clear signup fields
+      setSignupName("");
+      setSignupEmail("");
+      setSignupPassword("");
+    } catch (error: any) {
       console.error("Error en registro:", error);
       
-      // Check if it's a network error
       if (error instanceof TypeError && error.message.includes('Network request failed')) {
         showToast('Por favor verifica tu conexión a internet', 'error');
       } else {
-        showToast('No se pudo conectar con el servidor', 'error');
+        showToast(error.message || 'No se pudo crear la cuenta', 'error');
       }
     } finally {
       setLoading(false);

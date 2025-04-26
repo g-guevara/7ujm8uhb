@@ -10,6 +10,8 @@ import {
 import { useToast } from '../utils/ToastContext';
 import { User } from "../components/Login/User";
 import { styles } from "../styles/LoginFormStyles";
+import { ApiService } from "../services/api";
+import { saveToken } from "../utils/authUtils";
 
 interface LoginFormProps {
   onLogin: (user: User) => void;
@@ -31,51 +33,26 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
 
     setLoading(true);
     try {
-      console.log("Intentando hacer login con URL:", `${apiUrl}/login`);
-      const response = await fetch(`${apiUrl}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: loginEmail,
-          password: loginPassword,
-        }),
-      });
-
-      const contentType = response.headers.get("content-type");
-      console.log("Content-Type:", contentType);
-
-      if (!contentType || !contentType.includes("application/json")) {
-        const text = await response.text();
-        console.error("Respuesta no es JSON:", text);
-        showToast('El servidor no devolvió un JSON válido', 'error');
-        return;
+      const response = await ApiService.login(loginEmail, loginPassword);
+      
+      // Guardar el token
+      if (response.token) {
+        await saveToken(response.token);
       }
-
-      const data = await response.json();
-
-      if (response.ok) {
-        onLogin(data.user);
-        showToast('¡Has iniciado sesión correctamente!', 'success');
-      } else {
-        // Specific error messages based on server response
-        if (response.status === 401) {
-          showToast('Email o contraseña incorrectos', 'error');
-        } else if (response.status === 404) {
-          showToast('El email no está registrado', 'error');
-        } else {
-          showToast(data.error || 'No se pudo iniciar sesión', 'error');
-        }
-      }
-    } catch (error) {
+      
+      onLogin(response.user);
+      showToast('¡Has iniciado sesión correctamente!', 'success');
+    } catch (error: any) {
       console.error("Error en login:", error);
       
-      // Check if it's a network error
-      if (error instanceof TypeError && error.message.includes('Network request failed')) {
+      if (error.message === 'Sesión expirada') {
+        showToast('Tu sesión ha expirado, por favor inicia sesión nuevamente', 'error');
+      } else if (error.message.includes('Credenciales inválidas')) {
+        showToast('Email o contraseña incorrectos', 'error');
+      } else if (error instanceof TypeError && error.message.includes('Network request failed')) {
         showToast('Por favor verifica tu conexión a internet', 'error');
       } else {
-        showToast('No se pudo conectar con el servidor', 'error');
+        showToast(error.message || 'No se pudo iniciar sesión', 'error');
       }
     } finally {
       setLoading(false);

@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 // Configuración detallada de CORS
@@ -18,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
-  dbName: "sensitivv", // Asumiendo el nombre basado en 
+  dbName: "sensitivv",
 })
 .then(() => console.log("Conectado a MongoDB"))
 .catch(err => console.error("Error conectando a MongoDB:", err));
@@ -85,6 +86,24 @@ const ProductIngredient = mongoose.model("ProductIngredient", ProductIngredientS
 const ProductNote = mongoose.model("ProductNote", ProductNoteSchema, "productnotes");
 const Wishlist = mongoose.model("Wishlist", WishlistSchema, "wishlist");
 
+// MIDDLEWARE DE AUTENTICACIÓN JWT
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: "Token de autenticación requerido" });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: "Token inválido o expirado" });
+    }
+    req.user = user;
+    next();
+  });
+};
+
 // RUTAS
 
 // Ruta de prueba
@@ -102,7 +121,7 @@ app.post("/test", (req, res) => {
 });
 
 // Rutas de Usuarios
-app.get("/users", async (req, res) => {
+app.get("/users", authenticateToken, async (req, res) => {
   try {
     const users = await User.find().select('-password'); // Excluir contraseñas
     res.json(users);
@@ -111,6 +130,7 @@ app.get("/users", async (req, res) => {
   }
 });
 
+// Registro de usuario
 app.post("/users", async (req, res) => {
   try {
     const { name, email, password, language } = req.body;
@@ -145,107 +165,7 @@ app.post("/users", async (req, res) => {
   }
 });
 
-// Rutas de Artículos
-app.get("/articles", async (req, res) => {
-  try {
-    const articles = await Article.find();
-    res.json(articles);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post("/articles", async (req, res) => {
-  try {
-    const article = new Article(req.body);
-    await article.save();
-    res.status(201).json(article);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Rutas de Historia
-app.get("/history", async (req, res) => {
-  try {
-    const history = await History.find();
-    res.json(history);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post("/history", async (req, res) => {
-  try {
-    const history = new History(req.body);
-    await history.save();
-    res.status(201).json(history);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Rutas de Ingredientes
-app.get("/productingredients", async (req, res) => {
-  try {
-    const ingredients = await ProductIngredient.find();
-    res.json(ingredients);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post("/productingredients", async (req, res) => {
-  try {
-    const ingredient = new ProductIngredient(req.body);
-    await ingredient.save();
-    res.status(201).json(ingredient);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Rutas de Notas de Producto
-app.get("/productnotes", async (req, res) => {
-  try {
-    const notes = await ProductNote.find();
-    res.json(notes);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post("/productnotes", async (req, res) => {
-  try {
-    const note = new ProductNote(req.body);
-    await note.save();
-    res.status(201).json(note);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Rutas de Wishlist
-app.get("/wishlist", async (req, res) => {
-  try {
-    const wishlist = await Wishlist.find();
-    res.json(wishlist);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post("/wishlist", async (req, res) => {
-  try {
-    const item = new Wishlist(req.body);
-    await item.save();
-    res.status(201).json(item);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Login de usuario
+// Login de usuario con JWT
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -262,14 +182,142 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Credenciales inválidas" });
     }
     
+    // Crear token JWT
+    const token = jwt.sign(
+      { 
+        userID: user.userID,
+        email: user.email,
+        name: user.name 
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' } // Token válido por 7 días
+    );
+    
     // Remover contraseña de la respuesta
     const userResponse = user.toObject();
     delete userResponse.password;
     
-    res.json({ user: userResponse });
+    res.json({ 
+      user: userResponse,
+      token: token
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+// Rutas de Artículos (protegidas)
+app.get("/articles", authenticateToken, async (req, res) => {
+  try {
+    const articles = await Article.find();
+    res.json(articles);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/articles", authenticateToken, async (req, res) => {
+  try {
+    const article = new Article(req.body);
+    await article.save();
+    res.status(201).json(article);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Rutas de Historia (protegidas)
+app.get("/history", authenticateToken, async (req, res) => {
+  try {
+    const history = await History.find({ userID: req.user.userID });
+    res.json(history);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/history", authenticateToken, async (req, res) => {
+  try {
+    const history = new History({
+      ...req.body,
+      userID: req.user.userID
+    });
+    await history.save();
+    res.status(201).json(history);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Rutas de Ingredientes (protegidas)
+app.get("/productingredients", authenticateToken, async (req, res) => {
+  try {
+    const ingredients = await ProductIngredient.find();
+    res.json(ingredients);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/productingredients", authenticateToken, async (req, res) => {
+  try {
+    const ingredient = new ProductIngredient(req.body);
+    await ingredient.save();
+    res.status(201).json(ingredient);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Rutas de Notas de Producto (protegidas)
+app.get("/productnotes", authenticateToken, async (req, res) => {
+  try {
+    const notes = await ProductNote.find({ userID: req.user.userID });
+    res.json(notes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/productnotes", authenticateToken, async (req, res) => {
+  try {
+    const note = new ProductNote({
+      ...req.body,
+      userID: req.user.userID
+    });
+    await note.save();
+    res.status(201).json(note);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Rutas de Wishlist (protegidas)
+app.get("/wishlist", authenticateToken, async (req, res) => {
+  try {
+    const wishlist = await Wishlist.find({ userID: req.user.userID });
+    res.json(wishlist);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/wishlist", authenticateToken, async (req, res) => {
+  try {
+    const item = new Wishlist({
+      ...req.body,
+      userID: req.user.userID
+    });
+    await item.save();
+    res.status(201).json(item);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Verificar token (ruta de utilidad)
+app.get("/verify-token", authenticateToken, (req, res) => {
+  res.json({ valid: true, user: req.user });
 });
 
 // Middleware de manejo de errores global
