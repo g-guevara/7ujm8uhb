@@ -1,5 +1,5 @@
 // app/services/api.ts
-import { getToken } from '../utils/authUtils';
+import { getToken } from '../lib/authUtils';
 
 const API_URL = "https://7ujm8uhb.vercel.app";
 

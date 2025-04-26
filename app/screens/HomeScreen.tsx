@@ -6,11 +6,13 @@ import {
   TextInput, 
   ScrollView, 
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
 import { Path, Svg } from 'react-native-svg';
 import { styles } from '../styles/HomeStyles';
 import ProfileScreen from './ProfileScreen';
+import { OpenFoodFactsApi, Product } from '../services/openFoodFactsApi';
 
 interface User {
   id?: string;
@@ -25,33 +27,11 @@ interface HomeScreenProps {
   onLogout?: () => void;
 }
 
-interface SearchResult {
-  id: string;
-  name: string;
-  type: 'product' | 'organic';
-  category?: string;
-}
-
-// Sample search data - in a real app, this would come from your API
-const sampleProducts: SearchResult[] = [
-  { id: '1', name: 'FrostyCream', type: 'product' },
-  { id: '2', name: 'NutriFlakes', type: 'product' },
-  { id: '3', name: 'FizzUp', type: 'product' },
-  { id: '4', name: 'Milk', type: 'organic', category: 'Dairy' },
-  { id: '5', name: 'Apples', type: 'organic', category: 'Fruits' },
-  { id: '6', name: 'Rice', type: 'organic', category: 'Grains' },
-  { id: '7', name: 'Beans', type: 'organic', category: 'Legumes' },
-  { id: '8', name: 'Chicken', type: 'organic', category: 'Meat' },
-  { id: '9', name: 'Almonds', type: 'organic', category: 'Nuts' },
-  { id: '10', name: 'Salmon', type: 'organic', category: 'Seafood' },
-  { id: '11', name: 'Carrots', type: 'organic', category: 'Vegetables' },
-];
-
 export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
   const [showProfile, setShowProfile] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
   const handleSearchFocus = () => {
@@ -64,18 +44,19 @@ export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
     }
   };
 
-  const handleSearch = (text: string) => {
+  const handleSearch = async (text: string) => {
     setSearchText(text);
-    if (text.trim()) {
+    if (text.trim().length > 2) {
       setIsSearching(true);
-      // Simulate API call with timeout
-      setTimeout(() => {
-        const results = sampleProducts.filter(product => 
-          product.name.toLowerCase().includes(text.toLowerCase())
-        );
-        setSearchResults(results);
+      try {
+        const response = await OpenFoodFactsApi.searchProducts(text);
+        setSearchResults(response.products || []);
+      } catch (error) {
+        console.error('Search error:', error);
+        setSearchResults([]);
+      } finally {
         setIsSearching(false);
-      }, 500);
+      }
     } else {
       setSearchResults([]);
     }
@@ -85,6 +66,13 @@ export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
     setSearchText('');
     setSearchResults([]);
     setIsSearchFocused(false);
+  };
+
+  const handleProductSelect = async (product: Product) => {
+    // Here you can add navigation to a product detail screen
+    console.log('Selected product:', product);
+    // You can also fetch full product details if needed:
+    // const fullProduct = await OpenFoodFactsApi.getProductByBarcode(product.code);
   };
 
   return (
@@ -110,7 +98,7 @@ export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
         <View style={styles.searchContainer}> 
           <TextInput 
             style={styles.searchInput} 
-            placeholder="Search" 
+            placeholder="Search products..." 
             placeholderTextColor="#999"
             value={searchText}
             onChangeText={handleSearch}
@@ -134,27 +122,49 @@ export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#007bff" />
               </View>
-            ) : searchText && searchResults.length > 0 ? (
-              searchResults.map((result) => (
+            ) : searchText.length > 2 && searchResults.length > 0 ? (
+              searchResults.map((product) => (
                 <TouchableOpacity 
-                  key={result.id} 
+                  key={product.code} 
                   style={styles.searchResultItem}
+                  onPress={() => handleProductSelect(product)}
                 >
+                  <View style={styles.productImageContainer}>
+                    {product.image_small_url ? (
+                      <Image 
+                        source={{ uri: product.image_small_url }}
+                        style={styles.productImage}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={styles.placeholderImage}>
+                        <Text style={styles.placeholderText}>No Image</Text>
+                      </View>
+                    )}
+                  </View>
                   <View style={styles.searchResultContent}>
-                    <Text style={styles.searchResultText}>{result.name}</Text>
-                    {result.category && (
-                      <Text style={styles.searchResultCategory}>
-                        {result.category}
+                    <Text style={styles.searchResultText} numberOfLines={2}>
+                      {product.product_name || 'Unknown Product'}
+                    </Text>
+                    {product.brands && (
+                      <Text style={styles.searchResultBrand} numberOfLines={1}>
+                        {product.brands}
                       </Text>
                     )}
                   </View>
                   <Text style={styles.arrowIcon}>→</Text>
                 </TouchableOpacity>
               ))
-            ) : searchText ? (
+            ) : searchText.length > 2 ? (
               <View style={styles.noResultsContainer}>
                 <Text style={styles.noResultsText}>
                   No results found for "{searchText}"
+                </Text>
+              </View>
+            ) : searchText ? (
+              <View style={styles.noResultsContainer}>
+                <Text style={styles.noResultsText}>
+                  Type at least 3 characters to search
                 </Text>
               </View>
             ) : null}
@@ -162,7 +172,7 @@ export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
         ) : (
           // Home Content View
           <>
-            <Text style={styles.sectionTitle}>Searched Products</Text>
+            <Text style={styles.sectionTitle}>Recently Searched</Text>
             
             <TouchableOpacity style={styles.productItem}>
               <Text style={styles.productText}>FrostyCream</Text>
@@ -179,46 +189,46 @@ export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
               <Text style={styles.arrowIcon}>→</Text>
             </TouchableOpacity>
             
-            <Text style={styles.sectionTitle}>Organic Categories</Text>
+            <Text style={styles.sectionTitle}>Food Categories</Text>
             
             <View style={styles.categoriesContainer}>
               <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#FFCC66' }]}>
-                <Text style={styles.categoryIcon}></Text>
+                <Text style={styles.categoryIcon}>🥛</Text>
                 <Text style={styles.categoryText}>Dairy</Text>
               </TouchableOpacity>
               
               <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#66CC99' }]}>
-                <Text style={styles.categoryIcon}></Text>
+                <Text style={styles.categoryIcon}>🍎</Text>
                 <Text style={styles.categoryText}>Fruits</Text>
               </TouchableOpacity>
               
               <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#FF8888' }]}>
-                <Text style={styles.categoryIcon}></Text>
+                <Text style={styles.categoryIcon}>🌾</Text>
                 <Text style={styles.categoryText}>Grains</Text>
               </TouchableOpacity>
               
               <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#77AAFF' }]}>
-                <Text style={styles.categoryIcon}></Text>
+                <Text style={styles.categoryIcon}>🫘</Text>
                 <Text style={styles.categoryText}>Legumes</Text>
               </TouchableOpacity>
               
               <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#FFAA99' }]}>
-                <Text style={styles.categoryIcon}></Text>
+                <Text style={styles.categoryIcon}>🥩</Text>
                 <Text style={styles.categoryText}>Meat</Text>
               </TouchableOpacity>
               
               <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#AAAAAA' }]}>
-                <Text style={styles.categoryIcon}></Text>
+                <Text style={styles.categoryIcon}>🥜</Text>
                 <Text style={styles.categoryText}>Nuts</Text>
               </TouchableOpacity>
               
               <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#9999FF' }]}>
-                <Text style={styles.categoryIcon}></Text>
+                <Text style={styles.categoryIcon}>🐟</Text>
                 <Text style={styles.categoryText}>Seafood</Text>
               </TouchableOpacity>
               
               <TouchableOpacity style={[styles.categoryItem, { backgroundColor: '#88DDAA' }]}>
-                <Text style={styles.categoryIcon}></Text>
+                <Text style={styles.categoryIcon}>🥬</Text>
                 <Text style={styles.categoryText}>Vegetables</Text>
               </TouchableOpacity>
             </View>

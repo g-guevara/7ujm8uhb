@@ -13,7 +13,7 @@ import SignupForm from "./screens/SignupForm";
 import { User } from "./components/Login/User";
 import TabNavigator from "./navigation/TabNavigator";
 import { styles } from "./styles/IndexStyles";
-import { getToken, removeToken } from "./utils/authUtils";
+import { getToken, removeToken } from "./lib/authUtils";
 import { ApiService } from "./services/api";
 
 // URL de tu API (reemplazar con la URL de Vercel cuando esté desplegado)

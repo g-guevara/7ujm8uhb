@@ -13,11 +13,8 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
-
   },
   
-  // If you don't have headerText style already, add it
   profileButton: {
     marginTop:7,
     padding: 8,
@@ -142,20 +139,49 @@ export const styles = StyleSheet.create({
   },
   searchResultItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#f2f2f7',
     borderRadius: 10,
-    padding: 15,
+    padding: 10,
     marginBottom: 10,
+  },
+  productImageContainer: {
+    width: 60,
+    height: 60,
+    marginRight: 12,
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: '#e8e8e8',
+  },
+  productImage: {
+    width: '100%',
+    height: '100%',
+  },
+  placeholderImage: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  placeholderText: {
+    fontSize: 10,
+    color: '#999',
+    textAlign: 'center',
   },
   searchResultContent: {
     flex: 1,
+    marginRight: 10,
   },
   searchResultText: {
     fontSize: 16,
     fontWeight: '500',
     color: '#333',
+    marginBottom: 4,
+  },
+  searchResultBrand: {
+    fontSize: 14,
+    color: '#666',
   },
   searchResultCategory: {
     fontSize: 14,

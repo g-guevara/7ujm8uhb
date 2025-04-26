@@ -1,7 +1,7 @@
 // app/contexts/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../components/Login/User';
-import { getToken, saveToken, removeToken } from '../utils/authUtils';
+import { getToken, saveToken, removeToken } from '../lib/authUtils';
 import { ApiService } from '../services/api';
 
 interface AuthContextType {

@@ -13,7 +13,7 @@ import { useToast } from '../utils/ToastContext';
 import { User } from "../components/Login/User";
 import { styles } from "../styles/LoginFormStyles";
 import { ApiService } from "../services/api";
-import { saveToken } from "../utils/authUtils";
+import { saveToken } from "../lib/authUtils";
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { makeRedirectUri } from 'expo-auth-session';
