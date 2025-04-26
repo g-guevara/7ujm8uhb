@@ -233,7 +233,7 @@ export default function ProfileScreen({ user, onLogout, onClose }: ProfileScreen
         </Modal>
 
         {/* Trial Period Modal */}
-        <Modal
+        <Modal 
           visible={showTrialModal}
           animationType="fade"
           transparent={true}
