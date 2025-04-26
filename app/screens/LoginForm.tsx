@@ -161,6 +161,15 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
           </>
         )}
       </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.forgotPasswordButton} 
+        onPress={() => {}}
+      >
+        <Text style={styles.forgotPasswordText}>
+          Forgot password?
+        </Text>
+      </TouchableOpacity>
       
       <TouchableOpacity 
         style={styles.switchButton} 

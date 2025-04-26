@@ -85,5 +85,14 @@ export const styles = StyleSheet.create({
   switchButtonText: {
     color: "#007bff",
     fontSize: 14,
+  },  
+  forgotPasswordText  : {
+    color: "#007bff",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 10,
+  },
+  forgotPasswordButton: {
+    marginTop: 10,  
   },
 });
