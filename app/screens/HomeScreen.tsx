@@ -120,7 +120,7 @@ export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
           <View style={styles.searchResultsContainer}>
             {isSearching ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#007bff" />
+                <ActivityIndicator size="large" color="#7d7d7d" />
               </View>
             ) : searchText.length > 2 && searchResults.length > 0 ? (
               searchResults.map((product) => (
