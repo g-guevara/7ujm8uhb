@@ -111,6 +111,12 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
 
   return (
     <View style={styles.formContainer}>
+            <View style={styles.logoContainer}>
+        <Image 
+          source={require('../../assets/images/icon.png')}
+          style={styles.logo}
+        />
+      </View>
       <Text style={styles.title}>Sign In</Text>
       
       <TextInput

@@ -8,9 +8,12 @@ export const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
   },
+  
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "center",
     padding: 20,
+    paddingTop: 60, // Añadido espacio extra para el logo
   },
+
 });

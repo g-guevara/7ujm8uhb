@@ -1,19 +1,7 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-  formContainer: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    width: '100%',
-    maxWidth: 400,
-    alignSelf: 'center',
-  },
+
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -84,5 +72,43 @@ export const styles = StyleSheet.create({
   },
   languageButtonTextActive: {
     color: "#fff",
+  },
+
+
+  formContainer: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    width: '100%',
+    maxWidth: 400,
+    alignSelf: 'center',
+    position: 'relative',
+  },
+  logoContainer: {
+    position: 'absolute',
+    top: -40,
+    left: 20,
+    width: 80,
+    height: 80,
+    borderRadius: 15,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    overflow: 'hidden',
+  },
+  logo: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
 });

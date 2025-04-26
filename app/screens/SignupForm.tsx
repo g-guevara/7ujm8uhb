@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity, 
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { useToast } from '../utils/ToastContext';
 import { styles } from "../styles/SignupFormStyles";
@@ -65,7 +66,15 @@ export default function SignupForm({ onSwitchToLogin, apiUrl }: SignupFormProps)
 
   return (
     <View style={styles.formContainer}>
-      <Text style={styles.title}>Create Account</Text>
+      {/* Logo Container */}
+      <View style={styles.logoContainer}>
+        <Image 
+          source={require('../../assets/images/icon.png')}
+          style={styles.logo}
+        />
+      </View>
+      
+      <Text style={styles.title}>Sign Up</Text>
       
       <TextInput
         style={styles.input}
