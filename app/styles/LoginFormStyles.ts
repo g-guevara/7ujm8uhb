@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-
 export const styles = StyleSheet.create({
   formContainer: {
     backgroundColor: "#fff",
@@ -43,18 +42,34 @@ export const styles = StyleSheet.create({
     fontSize: 16,
   },
   googleButton: {
-    backgroundColor: "#DB4437",
-    padding: 15,
+    backgroundColor: "#fff",
+    padding: 12,
     borderRadius: 8,
     alignItems: "center",
-    marginBottom: 20,
+    marginTop: 15,
     flexDirection: "row",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#ddd",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  googleLogo: {
+    width: 24,
+    height: 24,
+    marginRight: 12,
   },
   googleButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: "#555",
+    fontWeight: "500",
     fontSize: 16,
+  },
+  googleButtonDisabled: {
+    backgroundColor: "#f5f5f5",
+    borderColor: "#e0e0e0",
   },
   divider: {
     flexDirection: "row",

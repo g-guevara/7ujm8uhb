@@ -7,6 +7,7 @@ import {
   TouchableOpacity, 
   ActivityIndicator,
   Platform,
+  Image,
 } from "react-native";
 import { useToast } from '../utils/ToastContext';
 import { User } from "../components/Login/User";
@@ -112,27 +113,6 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
     <View style={styles.formContainer}>
       <Text style={styles.title}>Iniciar Sesión</Text>
       
-      {/* Google Sign-In Button */}
-      <TouchableOpacity 
-        style={[styles.googleButton, googleLoading && styles.buttonDisabled]} 
-        onPress={() => promptAsync()}
-        disabled={!request || googleLoading}
-      >
-        {googleLoading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.googleButtonText}>
-            Continuar con Google
-          </Text>
-        )}
-      </TouchableOpacity>
-
-      <View style={styles.divider}>
-        <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>O</Text>
-        <View style={styles.dividerLine} />
-      </View>
-      
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -157,6 +137,28 @@ export default function LoginForm({ onLogin, onSwitchToSignup, apiUrl }: LoginFo
           <ActivityIndicator color="#fff" />
         ) : (
           <Text style={styles.buttonText}>Iniciar Sesión</Text>
+        )}
+      </TouchableOpacity>
+
+      {/* Google Sign-In Button */}
+      <TouchableOpacity 
+        style={[styles.googleButton, (googleLoading || !request) && styles.googleButtonDisabled]} 
+        onPress={() => promptAsync()}
+        disabled={!request || googleLoading}
+      >
+        {googleLoading ? (
+          <ActivityIndicator color="#555" />
+        ) : (
+          <>
+            <Image 
+              source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png' }}
+              style={styles.googleLogo}
+              resizeMode="contain"
+            />
+            <Text style={styles.googleButtonText}>
+              Continuar con Google
+            </Text>
+          </>
         )}
       </TouchableOpacity>
       
