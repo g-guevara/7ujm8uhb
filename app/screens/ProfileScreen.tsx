@@ -121,10 +121,7 @@ export default function ProfileScreen({ user, onLogout, onClose }: ProfileScreen
           </View>
 
           <View style={styles.infoSection}>
-            <View style={styles.infoItem}>
-              <Text style={styles.infoLabel}>Language</Text>
-              <Text style={styles.infoValue}>{user.language === 'en' ? 'English' : 'Español'}</Text>
-            </View>
+
             <View style={styles.infoItem}>
               <Text style={styles.infoLabel}>Trial Period</Text>
               <Text style={styles.infoValue}>{user.trialPeriodDays} days</Text>
