@@ -51,7 +51,7 @@ export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
     }
     searchTimeout.current = setTimeout(() => {
       performSearch(text);
-    }, 3000);
+    }, 7000);
   };
 
   const clearSearch = () => {
