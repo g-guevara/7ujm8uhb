@@ -85,29 +85,31 @@ export default function TestScreen() {
           <Text style={styles.currentTestSubtitle}>2 days, 23 hours remain</Text>
           <Text style={styles.productName}>Product: Peanut</Text>
           <TouchableOpacity style={styles.finishButton}>
-            <Text style={styles.finishButtonText}>Finish Test →</Text>
+            <Text style={styles.finishButtonText}>Finish →</Text>
           </TouchableOpacity>
         </View>
 
         {/* History */}
-        <Text style={styles.sectionTitle}>History</Text>
-        {historyItems.map((item, index) => (
-          <View key={index} style={styles.historyItem}>
-            <View style={styles.historyHeader}>
-              <Text style={styles.historyDate}>{item.date}</Text>
-              <Text style={[
-                styles.historyStatus,
-                item.status === 'Critic' ? styles.criticStatus : styles.safeStatus
-              ]}>
-                {item.status}
-              </Text>
+        <View style={styles.historyContainer}>
+          <Text style={[styles.sectionTitle, { marginTop: 0 }]}>History</Text>
+          {historyItems.map((item, index) => (
+            <View key={index} style={styles.historyItem}>
+              <View style={styles.historyHeader}>
+                <Text style={styles.historyDate}>{item.date}</Text>
+                <Text style={[
+                  styles.historyStatus,
+                  item.status === 'Critic' ? styles.criticStatus : styles.safeStatus
+                ]}>
+                  {item.status}
+                </Text>
+              </View>
+              <Text style={styles.historyItemName}>{item.name}</Text>
+              {item.notes && (
+                <Text style={styles.historyNotes}>{item.notes}</Text>
+              )}
             </View>
-            <Text style={styles.historyItemName}>{item.name}</Text>
-            {item.notes && (
-              <Text style={styles.historyNotes}>{item.notes}</Text>
-            )}
-          </View>
-        ))}
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

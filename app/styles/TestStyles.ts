@@ -17,6 +17,10 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     marginBottom: 20,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#E5E5E5',
+    paddingVertical: 10,
   },
   dayItem: {
     alignItems: 'center',
@@ -122,6 +126,12 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginTop: 8,
+  },
+  historyContainer: {
+    backgroundColor: '#F5F5F7',
+    paddingTop: 20,
+    paddingBottom: 20,
+    marginTop: 10,
   },
   scrollView: {
     flex: 1,
