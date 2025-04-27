@@ -10,6 +10,7 @@ interface HeaderProps {
   onFocus: () => void;
   onBlur: () => void;
   onProfilePress: () => void;
+  onSubmit: () => void;  // Added this prop
 }
 
 export default function HomeHeaderAndSearch({
@@ -18,7 +19,8 @@ export default function HomeHeaderAndSearch({
   onClearSearch,
   onFocus,
   onBlur,
-  onProfilePress
+  onProfilePress,
+  onSubmit
 }: HeaderProps) {
   return (
     <>
@@ -38,12 +40,15 @@ export default function HomeHeaderAndSearch({
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search products..."
+          placeholder="Search products and press Enter..."
           placeholderTextColor="#999"
           value={searchText}
           onChangeText={onSearchTextChange}
           onFocus={onFocus}
           onBlur={onBlur}
+          onSubmitEditing={onSubmit}  // This triggers when Enter is pressed
+          returnKeyType="search"       // Shows "Search" on keyboard
+          blurOnSubmit={false}        // Keeps keyboard open after submit
         />
         {searchText ? (
           <TouchableOpacity style={styles.clearButton} onPress={onClearSearch}>

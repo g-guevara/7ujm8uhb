@@ -1,6 +1,4 @@
 // app/services/openFoodFactsApi.ts
-// No need to import getAuthHeader for OpenFoodFacts API since it's public
-
 const BASE_URL = 'https://world.openfoodfacts.org';
 
 export interface Product {
@@ -24,66 +22,77 @@ export interface SearchResponse {
 }
 
 export class OpenFoodFactsApi {
-  // Search products by name
-  // Search products by name
-// Search products by name
-static async searchProducts(query: string, page: number = 1): Promise<SearchResponse> {
-  try {
-    if (!query.trim()) {
-      return { count: 0, page: 1, page_size: 0, products: [] };
-    }
+  static async searchProducts(query: string, page: number = 1): Promise<SearchResponse> {
+    try {
+      if (!query.trim()) {
+        return { count: 0, page: 1, page_size: 0, products: [] };
+      }
 
-    // Add timeout to prevent hanging requests
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      // Extended timeout to 30 seconds for very slow connections
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-    const response = await fetch(
-      `${BASE_URL}/cgi/search.pl?search_terms=${encodeURIComponent(query)}&json=true&page=${page}&page_size=15&fields=code,product_name,brands,image_url,image_small_url,categories`,
-      {
+      // Simplified URL without complex parameters
+      const searchUrl = `${BASE_URL}/cgi/search.pl?search_terms=${encodeURIComponent(query)}&json=1&page=${page}`;
+
+      console.log('Searching products with URL:', searchUrl);
+
+      const response = await fetch(searchUrl, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'User-Agent': 'Sensitive Foods App/1.0', // Some APIs require a user agent
         },
-        signal: controller.signal
+        signal: controller.signal,
+        mode: 'cors', // Explicitly set CORS mode
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        console.error('Response not OK:', response.status, response.statusText);
+        return { count: 0, page: 1, page_size: 0, products: [] };
       }
-    );
-    
-    clearTimeout(timeoutId);
-    
-    if (!response.ok) {
-      console.error('Response not OK:', response.status, response.statusText);
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    // Ensure products array exists
-    if (!data.products) {
+      
+      const data = await response.json();
+      
+      // Ensure products array exists
+      if (!data.products) {
+        return { count: 0, page: 1, page_size: 0, products: [] };
+      }
+      
+      console.log('Search successful, found products:', data.products.length);
+      return data;
+    } catch (error) {
+      console.error('Error in searchProducts:', error);
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          console.error('Request timed out after 30 seconds');
+        } else if (error.message.includes('Network request failed')) {
+          console.error('Network error - possibly CORS or connectivity issue');
+        }
+      }
+      
+      // Always return empty results instead of throwing
       return { count: 0, page: 1, page_size: 0, products: [] };
     }
-    
-    return data;
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        console.error('Request timed out');
-      } else {
-        console.error('Error searching products:', error);
-      }
-    } else {
-      console.error('Unknown error', error);
-    }
-    // Return empty result instead of throwing
-    return { count: 0, page: 1, page_size: 0, products: [] };
   }
-}
-
 
   // Get product by barcode
   static async getProductByBarcode(barcode: string): Promise<Product | null> {
     try {
-      const response = await fetch(`${BASE_URL}/api/v2/product/${barcode}.json`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      
+      const response = await fetch(`${BASE_URL}/api/v0/product/${barcode}.json`, {
+        headers: {
+          'Accept': 'application/json',
+        },
+        signal: controller.signal,
+        mode: 'cors',
+      });
+      
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         return null;
@@ -100,9 +109,21 @@ static async searchProducts(query: string, page: number = 1): Promise<SearchResp
   // Search products by category
   static async getProductsByCategory(category: string, page: number = 1): Promise<SearchResponse> {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      
       const response = await fetch(
-        `${BASE_URL}/category/${encodeURIComponent(category)}.json?page=${page}&page_size=15&fields=code,product_name,brands,image_url,image_small_url`
+        `${BASE_URL}/category/${encodeURIComponent(category)}.json?page=${page}`,
+        { 
+          headers: {
+            'Accept': 'application/json',
+          },
+          signal: controller.signal,
+          mode: 'cors',
+        }
       );
+      
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         throw new Error('Failed to fetch products by category');
@@ -112,7 +133,7 @@ static async searchProducts(query: string, page: number = 1): Promise<SearchResp
       return data;
     } catch (error) {
       console.error('Error fetching products by category:', error);
-      throw error;
+      return { count: 0, page: 1, page_size: 0, products: [] };
     }
   }
 }
